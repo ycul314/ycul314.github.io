@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>원소 합성 실험실</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: white;
+        }
+
+        .game-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            margin-bottom: 10px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px 25px;
+            border-radius: 10px;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .stat-number {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #ffd700;
+        }
+
+        .game-area {
+            display: grid;
+            grid-template-columns: 1fr 300px 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .elements-panel {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 20px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .elements-panel h3 {
+            margin-bottom: 15px;
+            text-align: center;
+            color: #ffd700;
+        }
+
+        .elements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 8px;
+        }
+
+        .element {
+            background: linear-gradient(145deg, #4a5568, #2d3748);
+            border: 2px solid #4a5568;
+            border-radius: 8px;
+            padding: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 70px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .element:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+            border-color: #ffd700;
+        }
+
+        .element.new {
+            animation: glow 2s infinite alternate;
+        }
+
+        @keyframes glow {
+            from { box-shadow: 0 0 10px #ffd700; }
+            to { box-shadow: 0 0 20px #ffd700, 0 0 30px #ffd700; }
+        }
+
+        .element-symbol {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+
+        .element-name {
+            font-size: 0.7em;
+            opacity: 0.8;
+        }
+
+        .element.basic { border-color: #48bb78; background: linear-gradient(145deg, #48bb78, #38a169); }
+        .element.rare { border-color: #ed8936; background: linear-gradient(145deg, #ed8936, #dd6b20); }
+        .element.legendary { border-color: #9f7aea; background: linear-gradient(145deg, #9f7aea, #805ad5); }
+
+        .fusion-chamber {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .fusion-chamber::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: rotate 4s linear infinite;
+        }
+
+        @keyframes rotate {
+            to { transform: rotate(360deg); }
+        }
+
+        .fusion-slots {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin: 20px 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .fusion-slot {
+            width: 80px;
+            height: 80px;
+            border: 3px dashed rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .fusion-slot.occupied {
+            border-color: #ffd700;
+            background: rgba(255, 215, 0, 0.2);
+        }
+
+        .fusion-slot.drop-zone {
+            border-color: #48bb78;
+            background: rgba(72, 187, 120, 0.3);
+            transform: scale(1.1);
+        }
+
+        .plus-icon {
+            font-size: 1.5em;
+            color: rgba(255, 255, 255, 0.7);
+            margin: 0 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .fuse-button {
+            background: linear-gradient(145deg, #ed8936, #dd6b20);
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            color: white;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .fuse-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(237, 137, 54, 0.4);
+        }
+
+        .fuse-button:disabled {
+            background: #4a5568;
+            cursor: not-allowed;
+        }
+
+        .result-area {
+            margin-top: 20px;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .fusion-animation {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .fusion-animation.active {
+            opacity: 1;
+            animation: fusion-burst 1.5s ease-out;
+        }
+
+        @keyframes fusion-burst {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); opacity: 0; }
+        }
+
+        .hint-panel {
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 15px;
+            padding: 20px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .hint-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 0.9em;
+        }
+
+        .achievements {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 300px;
+            z-index: 1000;
+        }
+
+        .achievement {
+            background: linear-gradient(145deg, #48bb78, #38a169);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            transform: translateX(320px);
+            transition: transform 0.5s ease;
+        }
+
+        .achievement.show {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 768px) {
+            .game-area {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto;
+            }
+            
+            .stats {
+                gap: 15px;
+            }
+            
+            .fusion-slots {
+                gap: 10px;
+            }
+            
+            .fusion-slot {
+                width: 60px;
+                height: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>🧪 원소 합성 실험실 🧪</h1>
+            <p>기본 원소들을 조합하여 새로운 원소를 발견해보세요!</p>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-number" id="discovered-count">4</div>
+                <div>발견한 원소</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="fusion-count">0</div>
+                <div>합성 시도</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" id="success-rate">0%</div>
+                <div>성공률</div>
+            </div>
+        </div>
+
+        <div class="game-area">
+            <div class="elements-panel">
+                <h3>보유 원소</h3>
+                <div class="elements-grid" id="elements-grid"></div>
+            </div>
+
+            <div class="fusion-chamber">
+                <h3>합성 챔버</h3>
+                <div class="fusion-slots">
+                    <div class="fusion-slot" id="slot1"></div>
+                    <div class="plus-icon">+</div>
+                    <div class="fusion-slot" id="slot2"></div>
+                </div>
+                <button class="fuse-button" id="fuse-button" disabled>합성하기</button>
+                <div class="result-area" id="result-area"></div>
+                <div class="fusion-animation" id="fusion-animation">✨💫⭐</div>
+            </div>
+
+            <div class="hint-panel">
+                <h3>합성 힌트</h3>
+                <div id="hints-list">
+                    <div class="hint-item">💡 수소 + 산소 = ?</div>
+                    <div class="hint-item">🔥 탄소 + 산소 = ?</div>
+                    <div class="hint-item">⚡ 나트륨 + 염소 = ?</div>
+                    <div class="hint-item">🌟 발견한 원소들을 다시 조합해보세요!</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="achievements" id="achievements"></div>
+
+    <script>
+        class ElementFusionGame {
+            constructor() {
+                this.elements = {
+                    'H': { name: '수소', rarity: 'basic', discovered: true },
+                    'O': { name: '산소', rarity: 'basic', discovered: true },
+                    'C': { name: '탄소', rarity: 'basic', discovered: true },
+                    'N': { name: '질소', rarity: 'basic', discovered: true },
+                    'H2O': { name: '물', rarity: 'rare', discovered: false },
+                    'CO2': { name: '이산화탄소', rarity: 'rare', discovered: false },
+                    'CH4': { name: '메탄', rarity: 'rare', discovered: false },
+                    'NH3': { name: '암모니아', rarity: 'rare', discovered: false },
+                    'Na': { name: '나트륨', rarity: 'basic', discovered: false },
+                    'Cl': { name: '염소', rarity: 'basic', discovered: false },
+                    'NaCl': { name: '소금', rarity: 'rare', discovered: false },
+                    'Fe': { name: '철', rarity: 'basic', discovered: false },
+                    'S': { name: '황', rarity: 'basic', discovered: false },
+                    'FeS': { name: '황화철', rarity: 'rare', discovered: false },
+                    'Ca': { name: '칼슘', rarity: 'basic', discovered: false },
+                    'CaO': { name: '생석회', rarity: 'rare', discovered: false },
+                    'H2SO4': { name: '황산', rarity: 'legendary', discovered: false },
+                    'NaOH': { name: '수산화나트륨', rarity: 'legendary', discovered: false },
+                    'CaCO3': { name: '탄산칼슘', rarity: 'legendary', discovered: false },
+                    'Au': { name: '금', rarity: 'legendary', discovered: false }
+                };
+
+                this.recipes = {
+                    'H+O': 'H2O',
+                    'C+O': 'CO2',
+                    'C+H': 'CH4',
+                    'N+H': 'NH3',
+                    'Na+Cl': 'NaCl',
+                    'Fe+S': 'FeS',
+                    'Ca+O': 'CaO',
+                    'H2O+S': 'H2SO4',
+                    'Na+H2O': 'NaOH',
+                    'Ca+CO2': 'CaCO3',
+                    'Fe+H2O': 'Au'  // 마법같은 연금술!
+                };
+
+                this.selectedElements = [];
+                this.stats = {
+                    discovered: 4,
+                    fusions: 0,
+                    successes: 0
+                };
+
+                this.achievements = [
+                    { id: 'first_fusion', name: '첫 합성', description: '첫 번째 원소를 합성했습니다!', achieved: false },
+                    { id: 'water_maker', name: '물 제조자', description: '물을 만들었습니다!', achieved: false },
+                    { id: 'alchemist', name: '연금술사', description: '금을 만들었습니다!', achieved: false },
+                    { id: 'scientist', name: '과학자', description: '10개 이상의 원소를 발견했습니다!', achieved: false }
+                ];
+
+                this.init();
+            }
+
+            init() {
+                this.renderElements();
+                this.updateStats();
+                this.setupEventListeners();
+                this.unlockRandomElement();
+            }
+
+            renderElements() {
+                const grid = document.getElementById('elements-grid');
+                grid.innerHTML = '';
+
+                Object.entries(this.elements).forEach(([symbol, element]) => {
+                    if (element.discovered) {
+                        const div = document.createElement('div');
+                        div.className = `element ${element.rarity}`;
+                        if (element.justDiscovered) {
+                            div.classList.add('new');
+                            setTimeout(() => div.classList.remove('new'), 3000);
+                            element.justDiscovered = false;
+                        }
+                        div.innerHTML = `
+                            <div class="element-symbol">${symbol}</div>
+                            <div class="element-name">${element.name}</div>
+                        `;
+                        div.draggable = true;
+                        div.dataset.symbol = symbol;
+                        grid.appendChild(div);
+                    }
+                });
+            }
+
+            setupEventListeners() {
+                const grid = document.getElementById('elements-grid');
+                const slots = [document.getElementById('slot1'), document.getElementById('slot2')];
+                const fuseButton = document.getElementById('fuse-button');
+
+                // 드래그 앤 드롭
+                grid.addEventListener('dragstart', (e) => {
+                    if (e.target.classList.contains('element')) {
+                        e.dataTransfer.setData('text/plain', e.target.dataset.symbol);
+                    }
+                });
+
+                slots.forEach((slot, index) => {
+                    slot.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        slot.classList.add('drop-zone');
+                    });
+
+                    slot.addEventListener('dragleave', () => {
+                        slot.classList.remove('drop-zone');
+                    });
+
+                    slot.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        slot.classList.remove('drop-zone');
+                        const symbol = e.dataTransfer.getData('text/plain');
+                        this.addToSlot(symbol, index);
+                    });
+
+                    slot.addEventListener('click', () => {
+                        this.clearSlot(index);
+                    });
+                });
+
+                fuseButton.addEventListener('click', () => {
+                    this.performFusion();
+                });
+            }
+
+            addToSlot(symbol, slotIndex) {
+                const slot = document.getElementById(`slot${slotIndex + 1}`);
+                const element = this.elements[symbol];
+                
+                slot.innerHTML = `
+                    <div class="element ${element.rarity}" style="width: 100%; height: 100%; margin: 0;">
+                        <div class="element-symbol" style="font-size: 1em;">${symbol}</div>
+                        <div class="element-name" style="font-size: 0.6em;">${element.name}</div>
+                    </div>
+                `;
+                slot.classList.add('occupied');
+                this.selectedElements[slotIndex] = symbol;
+                this.updateFuseButton();
+            }
+
+            clearSlot(slotIndex) {
+                const slot = document.getElementById(`slot${slotIndex + 1}`);
+                slot.innerHTML = '';
+                slot.classList.remove('occupied');
+                this.selectedElements[slotIndex] = null;
+                this.updateFuseButton();
+            }
+
+            updateFuseButton() {
+                const button = document.getElementById('fuse-button');
+                const hasElements = this.selectedElements.filter(el => el).length === 2;
+                button.disabled = !hasElements;
+            }
+
+            performFusion() {
+                if (this.selectedElements.filter(el => el).length !== 2) return;
+
+                this.stats.fusions++;
+                
+                const [el1, el2] = this.selectedElements.filter(el => el);
+                const recipeKey1 = `${el1}+${el2}`;
+                const recipeKey2 = `${el2}+${el1}`;
+                
+                const result = this.recipes[recipeKey1] || this.recipes[recipeKey2];
+                
+                // 애니메이션 시작
+                const animation = document.getElementById('fusion-animation');
+                animation.classList.add('active');
+                
+                setTimeout(() => {
+                    animation.classList.remove('active');
+                    
+                    if (result && this.elements[result]) {
+                        this.handleSuccessfulFusion(result);
+                    } else {
+                        this.handleFailedFusion();
+                    }
+                    
+                    this.clearAllSlots();
+                    this.updateStats();
+                }, 1500);
+            }
+
+            handleSuccessfulFusion(resultSymbol) {
+                this.stats.successes++;
+                const resultElement = this.elements[resultSymbol];
+                
+                if (!resultElement.discovered) {
+                    resultElement.discovered = true;
+                    resultElement.justDiscovered = true;
+                    this.stats.discovered++;
+                    
+                    this.showResult(`🎉 새로운 원소 발견! ${resultSymbol} (${resultElement.name})`, 'success');
+                    this.checkAchievements(resultSymbol);
+                    this.unlockRandomElement();
+                } else {
+                    this.showResult(`✅ ${resultSymbol} (${resultElement.name}) 합성 성공!`, 'success');
+                }
+                
+                this.renderElements();
+            }
+
+            handleFailedFusion() {
+                const messages = [
+                    '💥 합성 실패! 다른 조합을 시도해보세요.',
+                    '🤔 이 조합은 작동하지 않네요...',
+                    '⚗️ 실험은 계속되어야 합니다!',
+                    '🔬 실패도 과학의 일부입니다!'
+                ];
+                const message = messages[Math.floor(Math.random() * messages.length)];
+                this.showResult(message, 'failure');
+            }
+
+            showResult(message, type) {
+                const resultArea = document.getElementById('result-area');
+                resultArea.innerHTML = `<div class="result-message ${type}">${message}</div>`;
+                
+                setTimeout(() => {
+                    resultArea.innerHTML = '';
+                }, 3000);
+            }
+
+            clearAllSlots() {
+                this.selectedElements = [];
+                document.getElementById('slot1').innerHTML = '';
+                document.getElementById('slot2').innerHTML = '';
+                document.getElementById('slot1').classList.remove('occupied');
+                document.getElementById('slot2').classList.remove('occupied');
+                this.updateFuseButton();
+            }
+
+            updateStats() {
+                document.getElementById('discovered-count').textContent = this.stats.discovered;
+                document.getElementById('fusion-count').textContent = this.stats.fusions;
+                const successRate = this.stats.fusions > 0 ? Math.round((this.stats.successes / this.stats.fusions) * 100) : 0;
+                document.getElementById('success-rate').textContent = `${successRate}%`;
+            }
+
+            unlockRandomElement() {
+                const undiscovered = Object.entries(this.elements)
+                    .filter(([symbol, element]) => !element.discovered && element.rarity === 'basic')
+                    .slice(0, 2);
+                
+                if (undiscovered.length > 0 && Math.random() < 0.3) {
+                    const [symbol, element] = undiscovered[Math.floor(Math.random() * undiscovered.length)];
+                    element.discovered = true;
+                    element.justDiscovered = true;
+                    this.stats.discovered++;
+                    this.showAchievement(`🎁 새로운 기본 원소가 실험실에 도착했습니다: ${symbol} (${element.name})`);
+                    setTimeout(() => this.renderElements(), 1000);
+                }
+            }
+
+            checkAchievements(newElement) {
+                if (!this.achievements.find(a => a.id === 'first_fusion').achieved && this.stats.successes === 1) {
+                    this.unlockAchievement('first_fusion');
+                }
+                
+                if (!this.achievements.find(a => a.id === 'water_maker').achieved && newElement === 'H2O') {
+                    this.unlockAchievement('water_maker');
+                }
+                
+                if (!this.achievements.find(a => a.id === 'alchemist').achieved && newElement === 'Au') {
+                    this.unlockAchievement('alchemist');
+                }
+                
+                if (!this.achievements.find(a => a.id === 'scientist').achieved && this.stats.discovered >= 10) {
+                    this.unlockAchievement('scientist');
+                }
+            }
+
+            unlockAchievement(achievementId) {
+                const achievement = this.achievements.find(a => a.id === achievementId);
+                if (achievement && !achievement.achieved) {
+                    achievement.achieved = true;
+                    this.showAchievement(`🏆 업적 달성: ${achievement.name} - ${achievement.description}`);
+                }
+            }
+
+            showAchievement(message) {
+                const achievementsContainer = document.getElementById('achievements');
+                const div = document.createElement('div');
+                div.className = 'achievement';
+                div.textContent = message;
+                
+                achievementsContainer.appendChild(div);
+                
+                setTimeout(() => div.classList.add('show'), 100);
+                setTimeout(() => {
+                    div.classList.remove('show');
+                    setTimeout(() => div.remove(), 500);
+                }, 4000);
+            }
+        }
+
+        // 게임 시작
+        window.addEventListener('DOMContentLoaded', () => {
+            new ElementFusionGame();
+        });
+    </script>
+</body>
+</html>
