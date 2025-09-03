@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>이예리의 디지털 포트폴리오</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        
+        .header .subtitle {
+            font-size: 1.2em;
+            color: #718096;
+            margin-bottom: 30px;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-btn {
+            background: linear-gradient(45deg, #ff6b6b, #ffa726);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+        
+        .nav-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+        }
+        
+        .nav-btn.python {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            box-shadow: 0 4px 15px rgba(78, 205, 196, 0.3);
+        }
+        
+        .nav-btn.python:hover {
+            box-shadow: 0 8px 25px rgba(78, 205, 196, 0.4);
+        }
+        
+        .nav-btn.explore {
+            background: linear-gradient(45deg, #a8e6cf, #7fcdcd);
+            box-shadow: 0 4px 15px rgba(168, 230, 207, 0.3);
+        }
+        
+        .nav-btn.explore:hover {
+            box-shadow: 0 8px 25px rgba(168, 230, 207, 0.4);
+        }
+        
+        .section {
+            margin-bottom: 50px;
+            padding: 30px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border-left: 5px solid #ff6b6b;
+        }
+        
+        .section.python {
+            border-left-color: #4ecdc4;
+        }
+        
+        .section.explore {
+            border-left-color: #a8e6cf;
+        }
+        
+        .section h2 {
+            color: #4a5568;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-content {
+            color: #718096;
+            line-height: 1.6;
+        }
+        
+        .website-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .website-card {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+            transition: transform 0.3s ease;
+        }
+        
+        .website-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .python-project {
+            background: #f0fff4;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #c6f6d5;
+        }
+        
+        .python-project h3 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        
+        .explore-item {
+            background: #f0f8ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #bee3f8;
+        }
+        
+        .explore-item h3 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 30px;
+            color: #718096;
+            border-top: 1px solid #e2e8f0;
+            margin-top: 50px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .nav-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .nav-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌟 이예리의 디지털 포트폴리오 🌟</h1>
+            <p class="subtitle">안녕하세요! 중학생 예리의 디지털 세상에 오신 것을 환영합니다! 📚✨</p>
+        </div>
+        
+        <div class="nav-buttons">
+            <button class="nav-btn" onclick="scrollToSection('websites')">📚 내가 즐겨찾는 웹사이트</button>
+            <button class="nav-btn python" onclick="scrollToSection('python')">🐍 나의 파이썬 프로그램</button>
+            <button class="nav-btn explore" onclick="scrollToSection('explore')">🔍 관심 있는 내용 탐구</button>
+        </div>
+        
+        <div id="websites" class="section">
+            <h2>📚 내가 즐겨찾는 웹사이트 🌐</h2>
+            <div class="section-content">
+                <p>공부하고 즐기는 데 도움이 되는 웹사이트들을 소개해드릴게요! 💫</p>
+                <div class="website-grid">
+                    <div class="website-card">
+                        <h3>📖 Khan Academy</h3>
+                        <p>수학과 과학을 재미있게 배울 수 있는 최고의 학습 사이트예요! 🧮✨</p>
+                    </div>
+                    <div class="website-card">
+                        <h3>💻 Scratch</h3>
+                        <p>블록 코딩으로 게임과 애니메이션을 만들 수 있어서 정말 재미있어요! 🎮</p>
+                    </div>
+                    <div class="website-card">
+                        <h3>🎨 Canva</h3>
+                        <p>예쁜 디자인과 발표 자료를 만들 때 항상 사용하는 사이트예요! 🎭</p>
+                    </div>
+                    <div class="website-card">
+                        <h3>📝 Notion</h3>
+                        <p>학습 노트와 계획을 정리하는 데 정말 유용한 도구예요! 📋</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="python" class="section python">
+            <h2>🐍 나의 파이썬 프로그램 💻</h2>
+            <div class="section-content">
+                <p>파이썬으로 만든 프로그램들을 소개해드릴게요! 코딩이 정말 재미있어요! 🚀</p>
+                <div class="python-project">
+                    <h3>🎲 숫자 맞추기 게임</h3>
+                    <p>컴퓨터가 생각한 1~100 사이의 숫자를 맞추는 게임이에요! random 모듈을 사용해서 만들었답니다! 🎯</p>
+                </div>
+                <div class="python-project">
+                    <h3>📊 성적 계산기</h3>
+                    <p>여러 과목의 점수를 입력하면 평균과 등급을 계산해주는 프로그램이에요! 학교 성적 관리에 유용해요! 📈</p>
+                </div>
+                <div class="python-project">
+                    <h3>🌡️ 온도 변환기</h3>
+                    <p>섭씨, 화씨, 켈빈 온도를 서로 변환해주는 프로그램이에요! 과학 시간에 배운 내용을 코딩으로 구현했어요! 🔥</p>
+                </div>
+                <div class="python-project">
+                    <h3>📝 To-Do List</h3>
+                    <p>할 일을 추가하고 완료 표시할 수 있는 간단한 할 일 관리 프로그램이에요! 시간 관리에 도움이 돼요! ⏰</p>
+                </div>
+            </div>
+        </div>
+        
+        <div id="explore" class="section explore">
+            <h2>🔍 관심 있는 내용 탐구 🌟</h2>
+        </div>
+        
+    </div>
+    
+    <script>
+        function scrollToSection(sectionId) {
+            // 버튼 클릭 시 동작할 함수 (현재는 비어있음)
+            console.log('클릭된 섹션:', sectionId);
+        }
+    </script>
+</body>
+</html>
